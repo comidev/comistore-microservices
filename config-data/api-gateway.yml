@@ -14,7 +14,7 @@ spring:
       - id: product
         uri: lb://product
         predicates:
-          - Path=/products/**, Path=/categories/**
+          - Path=/products/**,/categories/**
         filters:
           - AuthFilter
       - id: auth
@@ -26,7 +26,7 @@ spring:
       - id: customer
         uri: lb://customer
         predicates:
-          - Path=/customers/**,Path=/countries/**
+          - Path=/customers/**,/countries/**
         filters:
           - AuthFilter
       - id: shopping
