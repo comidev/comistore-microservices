@@ -188,7 +188,8 @@ public class UserController {
     @PostMapping("/route/validate")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Tokens routeValidateToken(@RequestParam(name = "token", required = true) String token, @RequestBody RequestDTO requestDTO) {
+    public Tokens routeValidateToken(@RequestParam(name = "token", required = true) String token,
+            @RequestBody RequestDTO requestDTO) {
         return userService.routeValidateToken(token, requestDTO);
     }
 }

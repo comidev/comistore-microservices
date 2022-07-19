@@ -149,6 +149,8 @@ public class UserService {
             return new Tokens(token, token);
         }
 
+        System.out.println("Es protegido!! Tendremos Token?: " + token);
+        
         Payload payload = jwtService.verify(token);
         boolean isValid = routeValidator.validate(payload.getRoles(), requestDTO);
         if (!isValid) {

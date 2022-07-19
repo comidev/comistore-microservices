@@ -8,8 +8,11 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
 import org.springframework.web.server.ServerWebExchange;
 
+import comidev.apigateway.dto.ErrorMessage;
 import comidev.apigateway.dto.RequestDTO;
 import comidev.apigateway.dto.Tokens;
 import reactor.core.publisher.Mono;
@@ -45,12 +48,18 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                     .post()
                     .uri("http://auth/users/route/validate?token=" + bearerToken)
                     .bodyValue(new RequestDTO(uri, method))
-                    .retrieve()
-                    .bodyToMono(Tokens.class)
-                    .map(token -> {
-                        return exchange;
-                    })
-                    .flatMap(chain::filter);
+                    .exchangeToMono(client -> {
+                        if (client.statusCode().is2xxSuccessful()) {
+                            return client.bodyToMono(Tokens.class)
+                                    .map(token -> exchange)
+                                    .flatMap(chain::filter);
+                        } else {
+                            ServerHttpResponse response = exchange.getResponse();
+                            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                            return response.setComplete();
+                        }
+
+                    });
         });
     }
 

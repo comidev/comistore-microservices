@@ -7,10 +7,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import comidev.components.user.dto.RequestDTO;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Component
 @ConfigurationProperties(prefix = "role-path")
 public class RouteValidator {
+
     private List<Route> paths;
 
     private List<Route> findRoute(RequestDTO request) {
