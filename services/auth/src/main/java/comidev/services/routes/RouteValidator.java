@@ -3,14 +3,14 @@ package comidev.services.routes;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import comidev.components.user.dto.RequestDTO;
 
 @Service
+@ConfigurationProperties(prefix = "routes-protected")
 public class RouteValidator {
-    @Value("{routes}")
     private List<Route> routes;
 
     private List<Route> findRoute(RequestDTO request) {
