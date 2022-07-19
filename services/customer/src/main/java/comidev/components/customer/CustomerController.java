@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +43,6 @@ public class CustomerController {
             @ApiResponse(responseCode = "401", description = "UNAUTHORIZED - Se requiere Token con Rol(es): ADMIN", content = @Content),
     }, security = @SecurityRequirement(name = "bearer-key"))
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CustomerRes>> findAll() {
 
         List<CustomerRes> customers = customerService.findAll();
@@ -60,12 +58,19 @@ public class CustomerController {
             @ApiResponse(responseCode = "401", description = "UNAUTHORIZED - Se requiere Token con Rol(es): CLIENTE", content = @Content),
     }, security = @SecurityRequirement(name = "bearer-key"))
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('CLIENTE')")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public CustomerRes findById(@PathVariable Long id) {
 
         CustomerRes customer = customerService.findById(id);
+        return customer;
+    }
+
+    @GetMapping("/id/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Customer getById(@PathVariable Long id) {
+        Customer customer = customerService.getById(id);
         return customer;
     }
 
@@ -93,7 +98,6 @@ public class CustomerController {
             @ApiResponse(responseCode = "401", description = "UNAUTHORIZED - Se requiere Token con Rol(es): CLIENTE", content = @Content),
     }, security = @SecurityRequirement(name = "bearer-key"))
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('CLIENTE')")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public CustomerRes update(@Valid @RequestBody CustomerUpdate customerReq, BindingResult bindingResult,
@@ -110,7 +114,6 @@ public class CustomerController {
             @ApiResponse(responseCode = "401", description = "UNAUTHORIZED - Se requiere Token con Rol(es): CLIENTE", content = @Content),
     }, security = @SecurityRequirement(name = "bearer-key"))
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('CLIENTE')")
     @ResponseStatus(HttpStatus.OK)
     public void deleteById(@PathVariable Long id) {
         customerService.deleteById(id);

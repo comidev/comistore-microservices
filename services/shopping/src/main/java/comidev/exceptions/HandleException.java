@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import feign.FeignException;
+
 @ControllerAdvice
 public class HandleException {
 
@@ -21,6 +23,27 @@ public class HandleException {
     public ResponseEntity<ErrorMessage> generalError(HttpServletRequest request, HttpException exception) {
         HttpStatus status = exception.getStatus();
         ErrorMessage body = new ErrorMessage(status, exception.getMessage(), request);
+        return ResponseEntity.status(status).body(body);
+    }
+
+    // * Error del Cliente
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ErrorMessage> feignError(HttpServletRequest request, FeignException exception) {
+        HttpStatus status = HttpStatus.valueOf(exception.status());
+        final String MESSAGE = "\"message\":\"";
+
+        String message;
+        if (HttpStatus.SERVICE_UNAVAILABLE == status) {
+            message = "Servicio no funcionando por el momento";
+        } else {
+            String[] stackMessage = exception.getMessage().split(",");
+            String messageFinal = List.of(stackMessage).stream()
+                    .filter(item -> item.startsWith(MESSAGE))
+                    .toList().get(0);
+            message = messageFinal.substring(MESSAGE.length(), messageFinal.length() - 2);
+        }
+
+        ErrorMessage body = new ErrorMessage(status, message, request);
         return ResponseEntity.status(status).body(body);
     }
 

@@ -28,7 +28,7 @@ public class CustomerService {
                 .toList();
     }
 
-    private Customer getById(Long id) {
+    public Customer getById(Long id) {
         return customerRepo.findById(id).orElseThrow(() -> {
             String message = "El cliente no existe!";
             return new HttpException(HttpStatus.NOT_FOUND, message);

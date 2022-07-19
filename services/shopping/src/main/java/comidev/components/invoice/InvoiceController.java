@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +38,6 @@ public class InvoiceController {
             @ApiResponse(responseCode = "401", description = "UNAUTHORIZED - Se requiere Token con Rol(es): ADMIN", content = @Content),
     }, security = @SecurityRequirement(name = "bearer-key"))
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<InvoiceRes>> findAll() {
 
         List<InvoiceRes> invoices = invoiceService.findAll();
@@ -55,7 +53,6 @@ public class InvoiceController {
             @ApiResponse(responseCode = "401", description = "UNAUTHORIZED - Se requiere Token con Rol(es): CLIENTE", content = @Content),
     }, security = @SecurityRequirement(name = "bearer-key"))
     @GetMapping("/customer/{id}")
-    @PreAuthorize("hasRole('CLIENTE')")
     public ResponseEntity<List<InvoiceRes>> findByCustomerId(@PathVariable Long id) {
 
         List<InvoiceRes> invoices = invoiceService.findByCustomerId(id);
@@ -73,7 +70,6 @@ public class InvoiceController {
     }, security = @SecurityRequirement(name = "bearer-key"))
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('CLIENTE')")
     public void save(@Valid @RequestBody InvoiceReq invoiceReq, BindingResult bindingResult) {
         Validator.checkOrThrowBadRequest(bindingResult);
 

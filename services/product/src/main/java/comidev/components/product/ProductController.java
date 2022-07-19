@@ -6,9 +6,9 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import comidev.components.product.dto.ProductReq;
 import comidev.components.product.dto.ProductRes;
 import comidev.components.product.dto.ProductSearch;
+import comidev.components.product.dto.Stock;
 import comidev.services.validator.Validator;
 import lombok.AllArgsConstructor;
 
@@ -73,7 +74,6 @@ public class ProductController {
             @ApiResponse(responseCode = "401", description = "UNAUTHORIZED - Se requiere Token con Rol(es): ADMIN", content = @Content),
     }, security = @SecurityRequirement(name = "bearer-key"))
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public ProductRes save(@Valid @RequestBody ProductReq productReq,
@@ -86,4 +86,11 @@ public class ProductController {
         return productRes;
     }
 
+    // ? Feign
+    @PatchMapping("/{id}/stock")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Product updateStock(@PathVariable Long id, Stock stock) {
+        return productService.updateStock(id, stock.getStock());
+    }
 }

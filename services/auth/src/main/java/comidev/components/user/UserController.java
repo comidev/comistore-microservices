@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,15 +14,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import comidev.components.user.dto.Exists;
 import comidev.components.user.dto.Passwords;
+import comidev.components.user.dto.RequestDTO;
 import comidev.components.user.dto.Updated;
 import comidev.components.user.dto.UserReq;
 import comidev.components.user.dto.UserRes;
+import comidev.components.user.dto.UserResFeign;
 import comidev.components.user.dto.Username;
 import comidev.services.jwt.Tokens;
 import comidev.services.validator.Validator;
@@ -69,7 +71,7 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "CONFLICT - El username ya existe", content = @Content),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST - Error de validacion", content = @Content),
     })
-    @PostMapping
+    @PostMapping("/save/admin")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public UserRes saveAdmin(@Valid @RequestBody UserReq userReq, BindingResult bindingResult) {
@@ -102,7 +104,6 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "UNAUTHORIZED - Password Incorrecto | Se requiere Token con Rol(es): CLIENTE", content = @Content),
     }, security = @SecurityRequirement(name = "bearer-key"))
     @PatchMapping("/{id}/password")
-    @PreAuthorize("hasRole('CLIENTE')")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public Updated updatePassword(@PathVariable Long id,
@@ -153,5 +154,41 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void tokenValidate(@RequestHeader(name = "Authorization") String bearerToken) {
         userService.tokenValidate(bearerToken);
+    }
+
+    @PostMapping("/save/cliente")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public UserResFeign saveCliente(@Valid @RequestBody UserReq userReq, BindingResult bindingResult) {
+        Validator.checkOrThrowBadRequest(bindingResult);
+
+        UserResFeign userRes = userService.saveCliente(userReq);
+
+        return userRes;
+    }
+
+    @PatchMapping("/{usernamePrev}/username")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void updateUsername(@PathVariable String usernamePrev,
+            @Valid @RequestBody Username usernameNew, BindingResult bindingResult) {
+        Validator.checkOrThrowBadRequest(bindingResult);
+        userService.updateUsername(usernamePrev, usernameNew.getUsername());
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public UserResFeign getById(@PathVariable Long id) {
+        UserResFeign user = userService.getById(id);
+
+        return user;
+    }
+
+    @PostMapping("/route/validate")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public Tokens routeValidateToken(@RequestParam(name = "token", required = true) String token, @RequestBody RequestDTO requestDTO) {
+        return userService.routeValidateToken(token, requestDTO);
     }
 }

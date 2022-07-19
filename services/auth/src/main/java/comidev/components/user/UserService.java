@@ -10,12 +10,15 @@ import org.springframework.stereotype.Service;
 import comidev.components.role.RoleName;
 import comidev.components.role.RoleRepo;
 import comidev.components.user.dto.Passwords;
+import comidev.components.user.dto.RequestDTO;
 import comidev.components.user.dto.UserReq;
 import comidev.components.user.dto.UserRes;
+import comidev.components.user.dto.UserResFeign;
 import comidev.exceptions.HttpException;
 import comidev.services.jwt.JwtService;
 import comidev.services.jwt.Payload;
 import comidev.services.jwt.Tokens;
+import comidev.services.routes.RouteValidator;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -25,6 +28,7 @@ public class UserService {
     private final RoleRepo roleRepo;
     private final JwtService jwtService;
     private final BCryptPasswordEncoder bcrypt;
+    private final RouteValidator routeValidator;
 
     private User save(UserReq userReq, RoleName roleName) {
         boolean existsUsername = userRepo.existsByUsername(userReq.getUsername());
@@ -45,12 +49,21 @@ public class UserService {
                 .toList();
     }
 
+    public UserResFeign getById(Long id) {
+        return userRepo.findById(id)
+                .map(UserResFeign::new)
+                .orElseThrow(() -> {
+                    String message = "El usuario no existe!!!";
+                    return new HttpException(HttpStatus.NOT_FOUND, message);
+                });
+    }
+
     public UserRes saveAdmin(UserReq userReq) {
         return new UserRes(save(userReq, RoleName.ADMIN));
     }
 
-    public User saveCliente(UserReq userReq) {
-        return save(userReq, RoleName.CLIENTE);
+    public UserResFeign saveCliente(UserReq userReq) {
+        return new UserResFeign(save(userReq, RoleName.CLIENTE));
     }
 
     public boolean existsUsername(String username) {
@@ -129,5 +142,19 @@ public class UserService {
         User userDB = findByUsername(usernamePrev);
         userDB.setUsername(usernameNew);
         userRepo.save(userDB);
+    }
+
+    public Tokens routeValidateToken(String token, RequestDTO requestDTO) {
+        if (!routeValidator.routeHasProtection(requestDTO)) {
+            return new Tokens(token, token);
+        }
+
+        Payload payload = jwtService.verify(token);
+        boolean isValid = routeValidator.validate(payload.getRoles(), requestDTO);
+        if (!isValid) {
+            String message = "No tiene permisos...";
+            throw new HttpException(HttpStatus.FORBIDDEN, message);
+        }
+        return new Tokens(token, token);
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import comidev.components.customer.CustomerRepo;
+import comidev.components.customer.CustomerService;
 import comidev.components.invoice.dto.InvoiceReq;
 import comidev.components.invoice.dto.InvoiceRes;
 import comidev.components.invoice_item.InvoiceItem;
@@ -18,7 +18,7 @@ import lombok.AllArgsConstructor;
 public class InvoiceService {
     private final InvoiceRepo invoiceRepo;
     private final InvoiceItemService invoiceItemService;
-    private final CustomerRepo customerRepo;
+    private final CustomerService customerService;
 
     public List<InvoiceRes> findAll() {
         return invoiceRepo.findAll().stream().map(InvoiceRes::new).toList();
@@ -26,7 +26,7 @@ public class InvoiceService {
 
     public List<InvoiceRes> findByCustomerId(Long id) {
         // ? Se comunica con customer-service: verifica si el Cliente existe
-        customerRepo.validateCustomerID(id);
+            customerService.validateCustomerID(id);
 
         List<Invoice> invoicesDB = invoiceRepo.findByCustomerID(id);
 
@@ -38,7 +38,7 @@ public class InvoiceService {
 
         Long customerID = invoiceReq.getCustomerId();
         // ? Se comunica con customer-service: verifica si el Cliente existe
-        customerRepo.validateCustomerID(customerID);
+        customerService.validateCustomerID(customerID);
 
         Float total = 0f;
         List<InvoiceItem> items = new ArrayList<>();

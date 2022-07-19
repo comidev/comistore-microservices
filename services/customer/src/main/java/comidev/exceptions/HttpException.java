@@ -1,7 +1,6 @@
 package comidev.exceptions;
 
 import org.springframework.http.HttpStatus;
-
 import lombok.Getter;
 
 @Getter
