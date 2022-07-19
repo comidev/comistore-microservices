@@ -4,20 +4,17 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import comidev.components.user.dto.RequestDTO;
 
-@Service
-@ConfigurationProperties(prefix = "routes-protected")
+@Component
+@ConfigurationProperties(prefix = "role-path")
 public class RouteValidator {
-    private List<Route> routes;
+    private List<Route> paths;
 
     private List<Route> findRoute(RequestDTO request) {
-
-        System.out.println("\n\n\n\n" + request.getUri() + " - " + request.getMethod() + "\n\n\n\n");
-
-        return routes.stream().filter(item -> {
+        return paths.stream().filter(item -> {
             boolean equalUri = Pattern.matches(item.getUri(), request.getUri());
             boolean equalMethod = item.getMethod().equals(request.getMethod());
             return equalUri && equalMethod;
