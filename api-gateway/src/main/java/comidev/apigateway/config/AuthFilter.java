@@ -8,14 +8,9 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
-import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
-import org.springframework.web.server.ServerWebExchange;
 
-import comidev.apigateway.dto.ErrorMessage;
 import comidev.apigateway.dto.RequestDTO;
 import comidev.apigateway.dto.Tokens;
-import reactor.core.publisher.Mono;
 
 @Component
 public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {

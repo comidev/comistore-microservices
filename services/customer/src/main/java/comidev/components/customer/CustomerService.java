@@ -19,8 +19,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class CustomerService {
     private final CustomerRepo customerRepo;
-    private final CountryRepo countryRepo;
     private final UserService userService;
+    private final CountryRepo countryRepo;
 
     public List<CustomerRes> findAll() {
         return customerRepo.findAll().stream()

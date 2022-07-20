@@ -29,7 +29,8 @@ public class HandleException {
     // * Error del Cliente
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ErrorMessage> feignError(HttpServletRequest request, FeignException exception) {
-        HttpStatus status = HttpStatus.valueOf(exception.status());
+        int statusRes = exception.status();
+        HttpStatus status = HttpStatus.valueOf(statusRes == -1 ? 500 : statusRes);
         final String MESSAGE = "\"message\":\"";
 
         String message;

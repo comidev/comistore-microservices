@@ -17,8 +17,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class InvoiceService {
     private final InvoiceRepo invoiceRepo;
-    private final InvoiceItemService invoiceItemService;
     private final CustomerService customerService;
+    private final InvoiceItemService invoiceItemService;
 
     public List<InvoiceRes> findAll() {
         return invoiceRepo.findAll().stream().map(InvoiceRes::new).toList();

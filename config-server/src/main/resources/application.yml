@@ -8,6 +8,7 @@ spring:
         git:
           uri: https://github.com/comidev/comistore-microservices.git
           searchPaths: config-data
+          defaultLabel: master
   security:
     user:
       name: root

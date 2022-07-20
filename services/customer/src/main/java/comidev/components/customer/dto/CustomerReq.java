@@ -2,7 +2,6 @@ package comidev.components.customer.dto;
 
 import java.sql.Date;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -35,7 +34,6 @@ public class CustomerReq {
     @NotEmpty(message = "No puede ser vacio")
     private String photoUrl;
 
-    @Valid
     @NotNull(message = "No puede ser vacio")
     private UserReq user;
 
